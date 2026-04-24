@@ -7,10 +7,6 @@ Created on Wed Apr 15 16:45:22 2026
 
 # -*- coding: utf-8 -*-
 
-
-# -*- coding: utf-8 -*-
-
-
 import streamlit as st
 import pandas as pd
 from io import BytesIO
@@ -35,8 +31,6 @@ if file1 and file2:
     df1.columns = df1.columns.str.strip()
     df2.columns = df2.columns.str.strip()
 
-    
-
     # Preview
     st.subheader("Sheet1 Preview")
     st.dataframe(df1.head())
@@ -52,7 +46,9 @@ if file1 and file2:
     sheet1_key = st.selectbox("Select Key Column from Sheet1", df1.columns)
     sheet2_key = st.selectbox("Select Key Column from Sheet2", df2.columns)
     source_col = st.selectbox("Select Source Column (Sheet1)", df1.columns)
-    target_col = st.text_input("Enter Target Column Name (Sheet2)")
+
+    # CHANGE 2: Dropdown instead of text input for target column
+    target_col = st.selectbox("Select Target Column Name (Sheet2)", df2.columns)
 
     if st.button("Run Mapping"):
         try:
@@ -72,7 +68,9 @@ if file1 and file2:
 
             # Clean invalid values
             df2[target_col] = pd.to_numeric(df2[target_col], errors='coerce')
-            df2 = df2.dropna(subset=[target_col])
+
+            # CHANGE 1: Fill unmatched / missing values with 0 instead of dropping
+            df2[target_col] = df2[target_col].fillna(0)
 
             # Round and convert
             df2[target_col] = df2[target_col].round(0).astype("Int64")
